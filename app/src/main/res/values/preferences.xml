@@ -6,4 +6,6 @@
     <string name="pref_default_user">admin</string>
     <string name="pref_key_password">passwordPref</string>
     <string name="pref_default_password"></string>
+    <string name="pref_auto_login">autoLoginPref</string>
+    <string name="pref_default_auto_login">false</string>
 </resources>

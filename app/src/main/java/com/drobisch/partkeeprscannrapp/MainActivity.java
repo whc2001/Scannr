@@ -117,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
         mUserView.setText(user);
         mPasswordView.setText(user_pass);
 
-
+        if(Boolean.parseBoolean(prefs.getString(getString(R.string.pref_auto_login), getString(R.string.pref_default_auto_login))))
+            attemptLogin();
     }
 
     private boolean mayRequestContacts() {

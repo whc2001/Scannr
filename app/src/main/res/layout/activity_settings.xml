@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-    <ImageView
+
+        <ImageView
             android:layout_width="fill_parent"
             android:layout_height="190px"
             android:layout_gravity="center"
@@ -41,6 +42,12 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"/>
+
+            <Switch
+                android:id="@+id/auto_login_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Login automatically" />
 
         </android.support.design.widget.TextInputLayout>
         <Button
