@@ -196,76 +196,6 @@ public class ContinuousCaptureActivity extends Activity {
         return false;
     }
 
-    private Pair<InputStream, HttpURLConnection> doHttpConnection(String urlStr, String user, String password, String json, String method) {
-        InputStream in = null;
-        HttpURLConnection httpConn = null;
-        String restURI = urlStr; // "http://" + urlStr + "/api/parts/1/addStock";
-        boolean isGet = method.toUpperCase().equals("GET");
-        int resCode = -1;
-
-        Log.d(TAG, String.format("doHttpConnection: %s %s", method, restURI));
-
-        try {
-            URL url = new URL(restURI);
-            URLConnection urlConn = url.openConnection();
-
-            if (!(urlConn instanceof HttpURLConnection)) {
-                throw new IOException("URL is not an Http URL");
-            }
-
-            String userToken= user + ":" + password;
-            byte[] data = userToken.getBytes("UTF-8");
-            String encode = Base64.encodeToString(data,  Base64.NO_WRAP);
-            httpConn = (HttpURLConnection) urlConn;
-            httpConn.setAllowUserInteraction(false);
-            httpConn.setInstanceFollowRedirects(true);
-            httpConn.setRequestMethod(method);
-            httpConn.setRequestProperty("Authorization", "Basic " + encode);
-            httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
-
-            httpConn.setRequestProperty("Content-length", json.getBytes().length + "");
-            httpConn.setDoInput(true);
-            httpConn.setDoOutput(!isGet);
-            httpConn.setUseCaches(false);
-
-            if(!isGet) {
-                OutputStream outputStream = httpConn.getOutputStream();
-                outputStream.write(json.getBytes("UTF-8"));
-                outputStream.close();
-            }
-
-            httpConn.connect();
-
-            resCode = httpConn.getResponseCode();
-
-            boolean redirect = false;
-
-            if (resCode != HttpURLConnection.HTTP_OK) {
-                if (resCode == HttpURLConnection.HTTP_MOVED_TEMP
-                        || resCode == HttpURLConnection.HTTP_MOVED_PERM
-                        || resCode == HttpURLConnection.HTTP_SEE_OTHER)
-                    redirect = true;
-
-            }
-
-            if (resCode == HttpURLConnection.HTTP_OK) {
-                in = httpConn.getInputStream();
-                Log.d("LoginActivity","Successful URL-connection" + String.valueOf(resCode));
-            }
-            else {
-                Log.d("LoginActivity","Error URL-connection" + String.valueOf(resCode));
-                return Pair.create(null,httpConn);
-            }
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Pair.create(in,httpConn);
-    }
-
     public class ApiPartTask extends AsyncTask<Void, Void, Boolean> {
         private final String mUser;
         private final String mPassword;
@@ -305,7 +235,7 @@ public class ContinuousCaptureActivity extends Activity {
                 String restURL = mServer + "/api/parts/" + mPartID.toString();
                 if(!isQuery)
                     restURL += "/" + mCommand;
-                httpResult = doHttpConnection(restURL,mUser,mPassword,mJson,isQuery ? "GET" : "PUT");
+                httpResult = Utils.doHttpConnection(restURL,mUser,mPassword,mJson,isQuery ? "GET" : "PUT");
                 in = httpResult.first;
                 httpcon = httpResult.second;
                 /*Bundle b = new Bundle();
@@ -361,7 +291,7 @@ public class ContinuousCaptureActivity extends Activity {
                     mPartStock = json.getInt("stockLevel");
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    errorString = String.format(getString(R.string.error_unable_parse_resp), e.getMessage());
+                    errorString = getString(R.string.error_unable_parse_resp, e.getMessage());
                     error = true;
                 }
             }
@@ -377,7 +307,7 @@ public class ContinuousCaptureActivity extends Activity {
             mPartPartID = mPartID;
             if(error == true) {
                 mPartPartID = -1;
-                openMessageBox("Error", errorString);
+                Utils.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), errorString);
             }
         }
 
@@ -385,17 +315,5 @@ public class ContinuousCaptureActivity extends Activity {
         protected void onCancelled() {
 
         }
-
-
-        protected void openMessageBox(String headline, String message)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ContinuousCaptureActivity.this);
-            builder.setMessage(message).setTitle(headline);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {public void onClick(DialogInterface dialog, int id) {}});
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-
-
     }
 }

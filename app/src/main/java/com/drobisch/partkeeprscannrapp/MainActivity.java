@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +33,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -329,6 +334,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
         private final String mEmail;
         private final String mPassword;
 
+        private String errorMsg;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -336,16 +343,33 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            errorMsg = "";
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                String server = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE).getString("serverPref", "");
+                Pair<InputStream, HttpURLConnection> loginResult = Utils.doHttpConnection(String.format("%s/api/users/login", server), mEmail, mPassword, "", "POST");
+                InputStream in = loginResult.first;
+                HttpURLConnection httpcon = loginResult.second;
+                int respCode = httpcon.getResponseCode();
+
+                if(respCode != 201 || in == null) {
+                    if(respCode == 401) {
+                        errorMsg = getString(R.string.error_incorrect_password_user);
+                    }
+                    else {
+                        errorMsg =  getString(R.string.error_http_long, respCode);
+                    }
+                    return false;
+                }
+            }
+            catch(Exception ex) {
+                errorMsg = getString(R.string.error_server_connect_failed);
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
+            return true;
+
+            /*for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
@@ -355,6 +379,8 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
 
             // TODO: register the new account here.
             return true;
+
+             */
         }
 
         @Override
@@ -372,8 +398,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
                 startActivity(intent);
                 Log.d("onPostExecute",mUserView.getText().toString());
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Utils.openMessageBox(MainActivity.this, getString(R.string.error_title), errorMsg);
             }
         }
 

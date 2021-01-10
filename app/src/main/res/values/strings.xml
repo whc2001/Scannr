@@ -10,6 +10,9 @@
     <string name="action_login">Login</string>
     <string name="app_header">PARTKEEPR SCANNR</string>
     <string name="app_footer">Developed by \n Marcus Drobisch</string>
+
+    <string name="error_title">Error</string>
+
     <string name="error_invalid_user">This user is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
