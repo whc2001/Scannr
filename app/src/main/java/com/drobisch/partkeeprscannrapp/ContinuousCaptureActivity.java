@@ -196,11 +196,14 @@ public class ContinuousCaptureActivity extends Activity {
         return false;
     }
 
-    private Pair<InputStream, HttpURLConnection> doHttpConnection(String urlStr, String user, String password, String json) {
+    private Pair<InputStream, HttpURLConnection> doHttpConnection(String urlStr, String user, String password, String json, String method) {
         InputStream in = null;
         HttpURLConnection httpConn = null;
         String restURI = urlStr; // "http://" + urlStr + "/api/parts/1/addStock";
+        boolean isGet = method.toUpperCase().equals("GET");
         int resCode = -1;
+
+        Log.d(TAG, String.format("doHttpConnection: %s %s", method, restURI));
 
         try {
             URL url = new URL(restURI);
@@ -216,18 +219,20 @@ public class ContinuousCaptureActivity extends Activity {
             httpConn = (HttpURLConnection) urlConn;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
-            httpConn.setRequestMethod("PUT");
+            httpConn.setRequestMethod(method);
             httpConn.setRequestProperty("Authorization", "Basic " + encode);
             httpConn.setRequestProperty("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
 
             httpConn.setRequestProperty("Content-length", json.getBytes().length + "");
             httpConn.setDoInput(true);
-            httpConn.setDoOutput(true);
+            httpConn.setDoOutput(!isGet);
             httpConn.setUseCaches(false);
 
-            OutputStream outputStream = httpConn.getOutputStream();
-            outputStream.write(json.getBytes("UTF-8"));
-            outputStream.close();
+            if(!isGet) {
+                OutputStream outputStream = httpConn.getOutputStream();
+                outputStream.write(json.getBytes("UTF-8"));
+                outputStream.close();
+            }
 
             httpConn.connect();
 
@@ -295,11 +300,12 @@ public class ContinuousCaptureActivity extends Activity {
             msg.what = 1;
             String Name = "";
             Pair<InputStream, HttpURLConnection> httpResult;
+            boolean isQuery = (mCommand.length() == 0);
             try {
                 String restURL = mServer + "/api/parts/" + mPartID.toString();
-                if(mCommand != "")
+                if(!isQuery)
                     restURL += "/" + mCommand;
-                httpResult = doHttpConnection(restURL,mUser,mPassword,mJson);
+                httpResult = doHttpConnection(restURL,mUser,mPassword,mJson,isQuery ? "GET" : "PUT");
                 in = httpResult.first;
                 httpcon = httpResult.second;
                 /*Bundle b = new Bundle();
