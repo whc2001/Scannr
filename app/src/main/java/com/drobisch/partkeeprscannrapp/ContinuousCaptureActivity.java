@@ -312,7 +312,8 @@ public class ContinuousCaptureActivity extends Activity {
                 b.putString("bitmap", "test");
                 msg.setData(b);
                 */
-                if(in != null) {
+                int respCode = httpcon.getResponseCode();
+                if(respCode == 200 && in != null) {
                     BufferedReader r = new BufferedReader(new InputStreamReader(in));
                     StringBuilder total = new StringBuilder();
                     String line;
@@ -324,26 +325,22 @@ public class ContinuousCaptureActivity extends Activity {
                 }
                 else
                 {
+                    error = true;
                     if(httpcon != null) {
-
-                        switch (httpcon.getResponseCode())
+                        switch (respCode)
                         {
                             case 401:
-                                error = true;
                                 errorString = getString(R.string.error_incorrect_password_user);
                             break;
                             case 404:
-                                error = true;
                                 errorString = getString(R.string.error_part_not_exists);
                             break;
                             default:
-                                error = true;
-                                errorString = getString(R.string.error_http_long);
+                                errorString = getString(R.string.error_http_long, respCode);
                             break;
                         }
                     }
                     else {
-                        error = true;
                         errorString = getString(R.string.error_connection_long);
                     }
                 }
@@ -355,15 +352,18 @@ public class ContinuousCaptureActivity extends Activity {
                 errorString = getString(R.string.error_server_connect_failed);
             }
 
-            try {
-                JSONObject json= new JSONObject(jsonString);
-                mPartName = (String) json.get("name") + " (ID: " + mPartID.toString() + ")";
-                JSONObject jsonStorage = json.getJSONObject("storageLocation");
-                mPartLocation = (String) jsonStorage.get("name");
-                mPartStock = json.getInt("stockLevel");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                error = true;
+            if(!error) {
+                try {
+                    JSONObject json = new JSONObject(jsonString);
+                    mPartName = (String) json.get("name") + " (ID: " + mPartID.toString() + ")";
+                    JSONObject jsonStorage = json.getJSONObject("storageLocation");
+                    mPartLocation = (String) jsonStorage.get("name");
+                    mPartStock = json.getInt("stockLevel");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    errorString = String.format(getString(R.string.error_unable_parse_resp), e.getMessage());
+                    error = true;
+                }
             }
 
             return true;

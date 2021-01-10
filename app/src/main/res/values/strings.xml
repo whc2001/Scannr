@@ -18,14 +18,15 @@
     <string name="error_field_required">This field is required</string>
 
     <string name="error_not_found">Not found</string>
-    <string name="error_part_not_exists">This part does not exists</string>
+    <string name="error_part_not_exists">This part does not exist</string>
 
     <string name="error_connection">Connection error</string>
     <string name="error_connection_long">The connection failed!</string>
 
     <string name="error_http">HTTP Error</string>
-    <string name="error_http_long">Connection failed with http-code</string>
+    <string name="error_http_long">Connection failed with http-code %d</string>
     <string name="error_server_connect_failed">Failed to connect to server</string>
+    <string name="error_unable_parse_resp">Unable to parse server response: %s"</string>
 
 
 
