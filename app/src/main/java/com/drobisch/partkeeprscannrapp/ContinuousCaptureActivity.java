@@ -63,8 +63,8 @@ public class ContinuousCaptureActivity extends Activity {
                 }
             }
             if(isNewTag == true) {
-                checkInternetConenction();
-                Utils.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
+                // Utils.Net.checkInternetConenction(ContinuousCaptureActivity.this);
+                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
                 updatePartInfo(Integer.parseInt(actualCode));
                 isNewTag = false;
             }
@@ -174,25 +174,6 @@ public class ContinuousCaptureActivity extends Activity {
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
-    private boolean checkInternetConenction() {
-        // get Connectivity Manager object to check connection
-        ConnectivityManager connec =(ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
-
-        // Check for network connections
-        if ( connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTED ||
-
-                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED ) {
-            return true;
-        }else if (
-                connec.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED ||
-                        connec.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED  ) {
-            return false;
-        }
-        return false;
-    }
-
     public class ApiPartTask extends AsyncTask<Void, Void, Boolean> {
         private final String mUser;
         private final String mPassword;
@@ -232,7 +213,7 @@ public class ContinuousCaptureActivity extends Activity {
                 String restURL = mServer + "/api/parts/" + mPartID.toString();
                 if(!isQuery)
                     restURL += "/" + mCommand;
-                httpResult = Utils.doHttpConnection(restURL,mUser,mPassword,mJson,isQuery ? "GET" : "PUT");
+                httpResult = Utils.Net.doHttpConnection(restURL,mUser,mPassword,mJson,isQuery ? "GET" : "PUT");
                 in = httpResult.first;
                 httpcon = httpResult.second;
                 /*Bundle b = new Bundle();
@@ -304,7 +285,7 @@ public class ContinuousCaptureActivity extends Activity {
             mPartPartID = mPartID;
             if(error == true) {
                 mPartPartID = -1;
-                Utils.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), errorString);
+                Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), errorString);
             }
         }
 

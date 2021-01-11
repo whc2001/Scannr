@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
 
             try {
                 String server = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE).getString("serverPref", "");
-                Pair<InputStream, HttpURLConnection> loginResult = Utils.doHttpConnection(String.format("%s/api/users/login", server), mEmail, mPassword, "", "POST");
+                Pair<InputStream, HttpURLConnection> loginResult = Utils.Net.doHttpConnection(String.format("%s/api/users/login", server), mEmail, mPassword, "", "POST");
                 InputStream in = loginResult.first;
                 HttpURLConnection httpcon = loginResult.second;
                 int respCode = httpcon.getResponseCode();
@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
                 startActivity(intent);
                 Log.d("onPostExecute",mUserView.getText().toString());
             } else {
-                Utils.openMessageBox(MainActivity.this, getString(R.string.error_title), errorMsg);
+                Utils.View.openMessageBox(MainActivity.this, getString(R.string.error_title), errorMsg);
             }
         }
 
