@@ -7,6 +7,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class Utils {
+    private static Toast lastToast;
+
     public static Pair<InputStream, HttpURLConnection> doHttpConnection(String urlStr, String user, String password, String json, String method) {
         InputStream in = null;
         HttpURLConnection httpConn = null;
@@ -96,5 +100,13 @@ public class Utils {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {public void onClick(DialogInterface dialog, int id) {}});
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public static void showToast(Context context, String content, int length, int gravity, int yOffset, boolean forceHideLast) {
+        if(forceHideLast && lastToast != null)
+            lastToast.cancel();
+        lastToast = Toast.makeText(context, content, length);
+        lastToast.setGravity(gravity,0,yOffset);
+        lastToast.show();
     }
 }

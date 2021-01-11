@@ -64,10 +64,7 @@ public class ContinuousCaptureActivity extends Activity {
             }
             if(isNewTag == true) {
                 checkInternetConenction();
-                Toast infoToast = Toast.makeText(getApplicationContext(),actualCode,Toast.LENGTH_SHORT);
-                //specify the toast display position exact parent layout center. no x or y offset
-                infoToast.setGravity(Gravity.BOTTOM,0,390);
-                infoToast.show();
+                Utils.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
                 updatePartInfo(Integer.parseInt(actualCode));
                 isNewTag = false;
             }
