@@ -100,21 +100,73 @@ public class ContinuousCaptureActivity extends Activity {
         mPartStockView.setText("0");
         mPartPartID = -1;
 
-        ImageButton mAddStockButton = (ImageButton) findViewById(R.id.addStock_button);
-        mAddStockButton.setOnClickListener(new View.OnClickListener() {
+        Button mAddStockOneButton = (Button) findViewById(R.id.addStockOne_button);
+        mAddStockOneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addStock();
+                addStock(1);
             }
         });
 
-        ImageButton mRemoveStockButton = (ImageButton) findViewById(R.id.removeStock_button);
-        mRemoveStockButton.setOnClickListener(new View.OnClickListener() {
+        Button mRemoveStockOneButton = (Button) findViewById(R.id.removeStockOne_button);
+        mRemoveStockOneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeStock();
+                addStock(-1);
             }
         });
+
+        Button mAddStockMultiButton = (Button) findViewById(R.id.addStockMulti_button);
+        mAddStockMultiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPartPartID != -1)
+                    Utils.View.showQuantityInputDialog(ContinuousCaptureActivity.this, getString(R.string.prompt_add_multiple), new Action<Integer>() {
+                        @Override
+                        public void run(Integer quantity) { addStock(quantity); }
+                    });
+            }
+        });
+
+        Button mRemoveStockMultiButton = (Button) findViewById(R.id.removeStockMulti_button);
+        mRemoveStockMultiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPartPartID != -1)
+                    Utils.View.showQuantityInputDialog(ContinuousCaptureActivity.this,getString(R.string.prompt_remove_multiple), new Action<Integer>() {
+                        @Override
+                        public void run(Integer quantity) { addStock(-quantity); }
+                    });
+            }
+        });
+
+        Button mSetStockButton = (Button) findViewById(R.id.setStock_button);
+        mSetStockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPartPartID != -1)
+                    Utils.View.showQuantityInputDialog(ContinuousCaptureActivity.this,getString(R.string.prompt_set_stock_to), new Action<Integer>() {
+                        @Override
+                        public void run(Integer quantity) { setStock(quantity); }
+                    });
+            }
+        });
+
+        Button mClearStockButton = (Button) findViewById(R.id.clearStock_button);
+        mClearStockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mPartPartID != -1)
+                    Utils.View.showConfirmDialog(ContinuousCaptureActivity.this,getString(R.string.prompt_clear_stock), new Runnable() {
+                        @Override
+                        public void run() { setStock(0); }
+                    }, new Runnable() {
+                        @Override
+                        public void run() { }
+                    });
+            }
+        });
+
 
         barcodeView = (DecoratedBarcodeView) findViewById(R.id.barcode_scanner);
         barcodeView.setStatusText("");
@@ -126,22 +178,21 @@ public class ContinuousCaptureActivity extends Activity {
         task.execute((Void) null);
     }
 
-    private void addStock() {
-        Log.d("CaptureActivity", "addStock");
+    private void addStock(int quantity) {
+        Log.d("CaptureActivity", String.format("addStock %d", quantity));
         if(mPartPartID != -1) {
-            ApiPartTask task = new ApiPartTask(mUser, mPassword, mServer, mPartPartID,"addStock", "quantity=1&price=0&comment=");
+            ApiPartTask task = new ApiPartTask(mUser, mPassword, mServer, mPartPartID,"addStock", String.format("quantity=%d", quantity));
             task.execute((Void) null);
         }
     }
 
-    private void removeStock() {
-        Log.d("CaptureActivity", "removeStock");
+    private void setStock(int quantity) {
+        Log.d("CaptureActivity", String.format("setStock %d", quantity));
         if(mPartPartID != -1) {
-            ApiPartTask task = new ApiPartTask(mUser, mPassword, mServer, mPartPartID,"addStock", "quantity=-1&price=0&comment=");
+            ApiPartTask task = new ApiPartTask(mUser, mPassword, mServer, mPartPartID,"setStock", String.format("quantity=%d", quantity));
             task.execute((Void) null);
         }
     }
-
 
     @Override
     protected void onResume() {

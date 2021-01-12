@@ -5,10 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.text.method.SingleLineTransformationMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -130,6 +135,91 @@ public class Utils {
             lastToast = Toast.makeText(context, content, length);
             lastToast.setGravity(gravity, 0, yOffset);
             lastToast.show();
+        }
+
+        public static void showQuantityInputDialog(final Context context, String actionName, final Action<Integer> onConfirm) {
+            if (!((Activity) context).hasWindowFocus())
+                return;
+
+            final InputMethodManager ime = ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE));
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(String.format("%s: %s", actionName, context.getString(R.string.prompt_input_quantity)));
+
+            final EditText txtQuantity = new EditText(context);
+            txtQuantity.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            // Prevent text from being obscured to dots, as we used VARIATION_PASSWORD above to restrict non-numeric value.
+            txtQuantity.setTransformationMethod(SingleLineTransformationMethod.getInstance());
+            builder.setView(txtQuantity);
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    String quantityStr = txtQuantity.getText().toString();
+                    if(quantityStr.length() > 0) {
+                        Integer quantity = Integer.parseInt(quantityStr);
+                        onConfirm.run(quantity);
+                    }
+                }
+            });
+
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            final AlertDialog alert = builder.create();
+
+            // Enter key on keyboard triggers OK button
+            alert.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+                        alert.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    ime.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                }
+            });
+
+            alert.show();
+            txtQuantity.requestFocus();
+            ime.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+
+        public static void showConfirmDialog(Context context, String text, final Runnable onConfirm, final Runnable onCancel) {
+            if (!((Activity) context).hasWindowFocus())
+                return;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(text);
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    onConfirm.run();
+                }
+            });
+
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    onCancel.run();
+                }
+            });
+
+            builder.show();
         }
     }
 }

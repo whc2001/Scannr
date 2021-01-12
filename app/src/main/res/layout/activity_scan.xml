@@ -115,41 +115,100 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.30">
 
-                <TableLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:stretchColumns="0">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                    <TableRow
-                        android:id="@+id/tableRowButton1"
-                        android:layout_width="match_parent"
+
+                    <LinearLayout
                         android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                        <ImageButton
-                            android:id="@+id/addStock_button"
+                        <Button
+                            android:layout_height="0dp"
                             android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:src="@drawable/ic_exposure_plus_1_24dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="+1"
+                            android:id="@+id/addStockOne_button"
 
                             />
-                    </TableRow>
 
-                    <TableRow
-                        android:id="@+id/tableRowButton2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        <Button
+                            android:layout_height="0dp"
+                            android:layout_width="fill_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="-1"
+                            android:id="@+id/removeStockOne_button"
+                            />
 
-                        <ImageButton
-                            android:id="@+id/removeStock_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/ic_exposure_minus_1_24dp" />
-                    </TableRow>
+                    </LinearLayout>
 
-                </TableLayout>
+                    <LinearLayout
+                        android:layout_height="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_height="0dp"
+                            android:layout_width="fill_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="+n"
+                            android:id="@+id/addStockMulti_button"
+
+                            />
+
+                        <Button
+                            android:layout_height="0dp"
+                            android:layout_width="fill_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="-n"
+                            android:id="@+id/removeStockMulti_button"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_height="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_height="0dp"
+                            android:layout_width="fill_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="=n"
+                            android:id="@+id/setStock_button"
+
+                            />
+
+                        <Button
+                            android:layout_height="0dp"
+                            android:layout_width="fill_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="25sp"
+                            android:text="=0"
+                            android:id="@+id/clearStock_button"
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>

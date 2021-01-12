@@ -11,6 +11,12 @@
     <string name="app_header">PARTKEEPR SCANNR</string>
     <string name="app_footer">Developed by \n Marcus Drobisch</string>
 
+    <string name="prompt_input_quantity">Please enter quantity</string>
+    <string name="prompt_add_multiple">Add multiple</string>
+    <string name="prompt_remove_multiple">Remove multiple</string>
+    <string name="prompt_set_stock_to">Set stock to</string>
+    <string name="prompt_clear_stock">Set stock to 0?</string>
+
     <string name="error_title">Error</string>
 
     <string name="error_invalid_user">This user is invalid</string>
