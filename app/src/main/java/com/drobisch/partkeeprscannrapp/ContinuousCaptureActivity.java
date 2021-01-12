@@ -170,6 +170,12 @@ public class ContinuousCaptureActivity extends Activity {
 
         barcodeView = (DecoratedBarcodeView) findViewById(R.id.barcode_scanner);
         barcodeView.setStatusText("");
+        barcodeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actualCode = "";
+            }
+        });
         barcodeView.decodeContinuous(callback);
     }
 
