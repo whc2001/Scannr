@@ -391,11 +391,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
 
             if (success) {
                 SharedPreferences prefs = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
-                String server = prefs.getString(getString(R.string.pref_key_server), getString(R.string.pref_default_server));
                 Intent intent = new Intent(getApplicationContext(), ContinuousCaptureActivity.class);
                 intent.putExtra("user",mUserView.getText().toString());
                 intent.putExtra("password",mPasswordView.getText().toString());
-                intent.putExtra("server",server);
+                intent.putExtra("server",prefs.getString(getString(R.string.pref_key_server), getString(R.string.pref_default_server)));
+                intent.putExtra("barcode_template", prefs.getString(getString(R.string.pref_barcode_template), getString(R.string.pref_default_barcode_template)));
                 startActivity(intent);
                 Log.d("onPostExecute",mUserView.getText().toString());
             } else {

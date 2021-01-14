@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * This sample performs continuous scanning, displaying the barcode and source image whenever
@@ -41,6 +42,7 @@ public class ContinuousCaptureActivity extends Activity {
     private String mUser;
     private String mPassword;
     private String mServer;
+    private Pattern mBarcodeTemplate;
     private Integer mPartPartID = -1;
     private TextView mPartNameView;
     private TextView mPartStockView;
@@ -65,15 +67,26 @@ public class ContinuousCaptureActivity extends Activity {
             if(isNewTag == true) {
                 // Utils.Net.checkInternetConenction(ContinuousCaptureActivity.this);
                 isNewTag = false;
-                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
                 Long partId;
-                try {
-                    partId = Long.parseLong(actualCode);
-                }
-                catch(NumberFormatException ex) {
-                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode, actualCode));
+
+                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
+
+                // Does the barcode content match the template regex?
+                String capturedPartIdStr = Utils.Text.regexMatchGroup(actualCode, mBarcodeTemplate, 1);
+                if(capturedPartIdStr == null) {
+                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_template, actualCode));
                     return;
                 }
+
+                // Can the matched part ID be converted to number?
+                try {
+                    partId = Long.parseLong(capturedPartIdStr);
+                } catch(NumberFormatException ex) {
+                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_id, actualCode));
+                    return;
+                }
+
+                // Anything related to barcode is correct
                 updatePartInfo(partId.intValue());
             }
         }
@@ -97,7 +110,7 @@ public class ContinuousCaptureActivity extends Activity {
         mUser =  bundle.getString("user");
         mServer =  bundle.getString("server");
         mPassword =  bundle.getString("password");
-
+        mBarcodeTemplate = Pattern.compile(bundle.getString("barcode_template"));
 
         mPartNameView = (TextView) findViewById(R.id.partName);
         mPartLocationView = (TextView) findViewById(R.id.partLocation);

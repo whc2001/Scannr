@@ -8,4 +8,6 @@
     <string name="pref_default_password"></string>
     <string name="pref_auto_login">autoLoginPref</string>
     <string name="pref_default_auto_login">false</string>
+    <string name="pref_barcode_template">barcodeTemplatePref</string>
+    <string name="pref_default_barcode_template">^(\\d+)$</string>
 </resources>

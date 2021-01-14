@@ -5,6 +5,8 @@
     <string name="prompt_user">User</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_server">Server</string>
+    <string name="prompt_barcode_template">Barcode template</string>
+
     <string name="action_copy_staktrace">Copy</string>
     <string name="action_mail_staktrace">Mail</string>
     <string name="action_login">Login</string>
@@ -26,7 +28,8 @@
     <string name="error_unauthorized">Unauthorized</string>
     <string name="error_field_required">This field is required</string>
 
-    <string name="error_invalid_barcode">Barcode content cannot be recognized: \n%s</string>
+    <string name="error_invalid_barcode_template">Barcode content cannot be parsed against template: \n%s</string>
+    <string name="error_invalid_barcode_id">Part ID cannot be parsed as a number: \n%s\n\nHint: use \"\\d\" in your barcode template to match number firsthand!</string>
 
     <string name="error_not_found">Not found</string>
     <string name="error_part_not_exists">This part does not exist</string>
@@ -39,13 +42,8 @@
     <string name="error_server_connect_failed">Failed to connect to server</string>
     <string name="error_unable_parse_resp">Unable to parse server response: %s"</string>
 
-
-
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="action_settings">Settings</string>
     <string name="settings_activity_title">Partkeepr App - Settings</string>
-
-
-
 
 </resources>

@@ -23,6 +23,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     public static class Net {
@@ -220,6 +226,15 @@ public class Utils {
             });
 
             builder.show();
+        }
+    }
+
+    public static class Text {
+        public static String regexMatchGroup(String content, Pattern regex, int targetGroup) {
+            Matcher match = regex.matcher(content);
+            if(!match.find())
+                return null;
+            return match.group(targetGroup);
         }
     }
 }
