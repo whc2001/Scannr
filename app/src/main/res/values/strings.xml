@@ -26,6 +26,8 @@
     <string name="error_unauthorized">Unauthorized</string>
     <string name="error_field_required">This field is required</string>
 
+    <string name="error_invalid_barcode">Barcode content cannot be recognized: \n%s</string>
+
     <string name="error_not_found">Not found</string>
     <string name="error_part_not_exists">This part does not exist</string>
 

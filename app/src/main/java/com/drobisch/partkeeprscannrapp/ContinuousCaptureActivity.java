@@ -64,9 +64,17 @@ public class ContinuousCaptureActivity extends Activity {
             }
             if(isNewTag == true) {
                 // Utils.Net.checkInternetConenction(ContinuousCaptureActivity.this);
-                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
-                updatePartInfo(Integer.parseInt(actualCode));
                 isNewTag = false;
+                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
+                Long partId;
+                try {
+                    partId = Long.parseLong(actualCode);
+                }
+                catch(NumberFormatException ex) {
+                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode, actualCode));
+                    return;
+                }
+                updatePartInfo(partId.intValue());
             }
         }
 
