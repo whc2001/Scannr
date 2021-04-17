@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -36,8 +38,8 @@ import java.util.regex.Pattern;
  */
 public class ContinuousCaptureActivity extends Activity {
     private static final String TAG = ContinuousCaptureActivity.class.getSimpleName();
-    private DecoratedBarcodeView barcodeView;
-    private boolean isNewTag = false;
+
+    //private boolean isNewTag = false;
     private String  actualCode = "";
     private String mUser;
     private String mPassword;
@@ -47,54 +49,31 @@ public class ContinuousCaptureActivity extends Activity {
     private TextView mPartNameView;
     private TextView mPartStockView;
     private TextView mPartLocationView;
+    private TextInputEditText mBarcodeInputView;
 
+    private void onScanBarcode() {
+        Long partId;
 
+        Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
 
-    private BarcodeCallback callback = new BarcodeCallback() {
-        @Override
-        public void barcodeResult(BarcodeResult result) {
-            if (result.getText() != null) {
-                if(actualCode.equals(result.getText()))
-                {
-                    actualCode = result.getText();
-                } else {
-                    actualCode = result.getText();
-
-                    Log.d("barcodeResult", "New tag detected");
-                    isNewTag = true;
-                }
-            }
-            if(isNewTag == true) {
-                // Utils.Net.checkInternetConenction(ContinuousCaptureActivity.this);
-                isNewTag = false;
-                Long partId;
-
-                Utils.View.showToast(getApplicationContext(), actualCode, Toast.LENGTH_SHORT, Gravity.TOP, 300, true);
-
-                // Does the barcode content match the template regex?
-                String capturedPartIdStr = Utils.Text.regexMatchGroup(actualCode, mBarcodeTemplate, 1);
-                if(capturedPartIdStr == null) {
-                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_template, actualCode));
-                    return;
-                }
-
-                // Can the matched part ID be converted to number?
-                try {
-                    partId = Long.parseLong(capturedPartIdStr);
-                } catch(NumberFormatException ex) {
-                    Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_id, actualCode));
-                    return;
-                }
-
-                // Anything related to barcode is correct
-                updatePartInfo(partId.intValue());
-            }
+        // Does the barcode content match the template regex?
+        String capturedPartIdStr = Utils.Text.regexMatchGroup(actualCode, mBarcodeTemplate, 1);
+        if(capturedPartIdStr == null) {
+            Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_template, actualCode));
+            return;
         }
 
-        @Override
-        public void possibleResultPoints(List<ResultPoint> resultPoints) {
+        // Can the matched part ID be converted to number?
+        try {
+            partId = Long.parseLong(capturedPartIdStr);
+        } catch(NumberFormatException ex) {
+            Utils.View.openMessageBox(ContinuousCaptureActivity.this, getString(R.string.error_title), getString(R.string.error_invalid_barcode_id, actualCode));
+            return;
         }
-    };
+
+        // Anything related to barcode is correct
+        updatePartInfo(partId.intValue());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,16 +167,18 @@ public class ContinuousCaptureActivity extends Activity {
             }
         });
 
-
-        barcodeView = (DecoratedBarcodeView) findViewById(R.id.barcode_scanner);
-        barcodeView.setStatusText("");
-        barcodeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                actualCode = "";
+        mBarcodeInputView = (TextInputEditText) findViewById(R.id.barcode_input);
+        mBarcodeInputView.setOnKeyListener(new EditText.OnKeyListener() {
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+                    actualCode = mBarcodeInputView.getText().toString().trim();
+                    mBarcodeInputView.setText("");
+                    onScanBarcode();
+                    return true;
+                }
+                return false;
             }
         });
-        barcodeView.decodeContinuous(callback);
     }
 
     private void updatePartInfo(int partID) {
@@ -222,34 +203,8 @@ public class ContinuousCaptureActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        barcodeView.resume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        barcodeView.pause();
-    }
-
-    public void pause(View view) {
-        barcodeView.pause();
-    }
-
-    public void resume(View view) {
-        barcodeView.resume();
-    }
-
-    public void triggerScan(View view) {
-        barcodeView.decodeSingle(callback);
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+        return super.onKeyDown(keyCode, event);
     }
 
     public class ApiPartTask extends AsyncTask<Void, Void, Boolean> {
